@@ -30,7 +30,7 @@ print milestone_map
 ###################################################
 
 # create the issues in target
-def create_issues(issue_list, milestone_no_map, status="open"):
+def create_issues(issue_list, milestone_no_map, issue_status="open"):
     i = 0
     limit = len(issue_list)
      
@@ -58,7 +58,7 @@ def create_issues(issue_list, milestone_no_map, status="open"):
                 comments.create(TARGET_REPO, new_issue_id, comment) 
                 j+=1
                 
-        if status == "closed":
+        if issue_status == "closed":
             modified_issue = {"state":"closed"}
             issues.edit(TARGET_REPO, new_issue_id, modified_issue)
             
@@ -71,13 +71,4 @@ print "########################################## \ncreating closed issues"
 src_repo_closed_issue_list = issues.read(SOURCE_REPO,"closed")
 create_issues(src_repo_closed_issue_list, milestone_map, "closed")
 
-done();
- 
-###################################################
-    
-# test code
-# labels.create(SOURCE_REPO, "CreatedWithAPI", "000000")
-# labels.delete(SOURCE_REPO, "CreatedWithAPI")
-# print milestones.create(SOURCE_REPO, "TestMilestone", None)
-# TestIssue = {"title":"title1", "body":"body", "assignee":"anabarasan"}
-# issues.create(SOURCE_REPO, TestIssue)
+done()
