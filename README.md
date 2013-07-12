@@ -2,6 +2,7 @@ github-import-issues
 ====================
 
 Import milestones, labels &amp; Issues from one repository to another
+This uses Github API v3.
 
 Configuration
 =============
