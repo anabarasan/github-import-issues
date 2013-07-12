@@ -1,20 +1,33 @@
-import base64
-import urllib2
+import base64, json, urllib2
+from config import GITHUB_USERNAME, GITHUB_PASSWORD
 
-from config import GITHUB_USERNAME, GITHUB_PASSWORD, DEBUG
+BASEURL = "https://api.github.com"
 
-def request(repository, api):
+def request(api, method=None, data=None):
+    request = urllib2.Request(BASEURL + api)
+    authstring = base64.encodestring('%s:%s' % (GITHUB_USERNAME, GITHUB_PASSWORD)).replace('\n', '')
+    request.add_header("Authorization", "Basic %s" % authstring)
+    request.add_header("User-Agent",GITHUB_USERNAME)
+    if (method is not None):
+        request.get_method = lambda: method
+    try:
+        if (data is not None):
+            data = json.dumps(data)
+            return urllib2.urlopen(request, data)
+        else:
+            return urllib2.urlopen(request)
+    except urllib2.HTTPError, e:
+        print e.read()
+        import sys
+        sys.exit(0)
     
-    request = urllib2.Request("https://api.github.com/repos/%s/%s" % (repository, api))
-    base64string = base64.encodestring('%s:%s' % (GITHUB_USERNAME, GITHUB_PASSWORD)).replace('\n', '')
-    request.add_header("Authorization", "Basic %s" % base64string)  
-    response = urllib2.urlopen(request)
-    
-    if(DEBUG):
-        print "X-RateLimit-Limit", response.info().getheader("X-RateLimit-Limit")
-        print "X-RateLimit-Remaining", response.info().getheader("X-RateLimit-Remaining")
-        print "######################################"
-    return response
+def getLimits():
+    response = request("/rate_limit")
+    print "################################################"
+    print "X-RateLimit-Limit     ", response.info().getheader("X-RateLimit-Limit")
+    print "X-RateLimit-Remaining ", response.info().getheader("X-RateLimit-Remaining")
+    print "X-RateLimit-Reset     ", response.info().getheader("X-RateLimit-Reset")
+    print "################################################"
 
 def done():
     print "######################################"

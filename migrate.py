@@ -1,25 +1,24 @@
+from common import getLimits, done
 from config import SOURCE_REPO, TARGET_REPO
 import issues, labels, milestones, comments
-from common import request, done
-
-request(SOURCE_REPO, "labels")
+getLimits()
 
 src_repo_labels = labels.read(SOURCE_REPO)
 tgt_repo_labels = labels.read(TARGET_REPO)
-     
+
 # delete the labels in target repo
 for key in tgt_repo_labels.keys():
     labels.delete(TARGET_REPO, key)
-         
+
 # create the lables in target repo
 for key in src_repo_labels.keys():
     labels.create(TARGET_REPO, key, src_repo_labels[key][key])
     #print key, tgt_repo_labels[key][key]
-     
+
 ###################################################
-   
+
 src_milestones = milestones.read(SOURCE_REPO)
-    
+
 # create the milestones in target
 milestone_map={}
 for key in src_milestones.keys():
@@ -33,7 +32,7 @@ print milestone_map
 def create_issues(issue_list, milestone_no_map, issue_status="open"):
     i = 0
     limit = len(issue_list)
-     
+    
     while i < limit:
         issue = issue_list[i]
         
@@ -55,7 +54,7 @@ def create_issues(issue_list, milestone_no_map, issue_status="open"):
             
             while j < no_of_comments:
                 comment= comments_list[j]["comment"]
-                comments.create(TARGET_REPO, new_issue_id, comment) 
+                comments.create(TARGET_REPO, new_issue_id, comment)
                 j+=1
                 
         if issue_status == "closed":
